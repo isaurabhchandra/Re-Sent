@@ -1,6 +1,8 @@
  import firebase from "firebase/app";
+import 'firebase/auth';
 
-const config = {
+import 'firebase/database';
+const config =  {
     apiKey: "AIzaSyAym1ai__rxCO_1NsDY9bEC1LgFB06Csag",
     authDomain: "resent-6d4fa.firebaseapp.com",
     databaseURL: "https://resent-6d4fa-default-rtdb.firebaseio.com",
@@ -12,3 +14,5 @@ const config = {
   };
 
   const app = firebase.initializeApp(config);
+  export const auth = app.auth();
+  export const database = app.database();
