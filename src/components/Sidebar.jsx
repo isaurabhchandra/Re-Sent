@@ -1,3 +1,4 @@
+import CreateRoomBtn from "./CreateRoomBtn"
 import DashboardToggle from "./dashboard/DashboardToggle"
 
 const Sidebar = () => {
@@ -6,6 +7,7 @@ const Sidebar = () => {
 
       <div>
         <DashboardToggle/>
+        <CreateRoomBtn/>
       </div>
       bottom
     </div>
