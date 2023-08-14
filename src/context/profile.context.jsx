@@ -2,20 +2,34 @@ import { useEffect } from 'react';
 import { useContext } from 'react';
 import { createContext, useState } from 'react';
 import { auth, database } from '../misc/firebase';
+import firebase from 'firebase';
 
+export const isOfflineForDatabase = {
+  state: 'offline',
+  last_changed: firebase.database.ServerValue.TIMESTAMP,
+};
+
+const isOnlineForDatabase = {
+  state: 'online',
+  last_changed: firebase.database.ServerValue.TIMESTAMP,
+};
 
 const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     let userRef;
+    let userStatusRef;
+
     const authunSub = auth.onAuthStateChanged(authObj => {
       if (authObj) {
+        userStatusRef = database.ref(`/status/${authObj.uid}`);
         userRef = database.ref(`/profiles/${authObj.uid}`);
         userRef.on('value', snap => {
-          const { name, createdAt,avatar } = snap.val();
+          const { name, createdAt, avatar } = snap.val();
           // console.log(profileData)
 
           const data = {
@@ -28,11 +42,29 @@ export const ProfileProvider = ({ children }) => {
           setProfile(data);
           setIsLoading(false);
         });
-      } else {
 
-        if(userRef){
-            userRef.off()
+        database.ref('.info/connected').on('value', snapshot => {
+          // If we're not currently connected, don't do anything.
+          if (snapshot.val() === false) {
+            return;
+          }
+
+          userStatusRef
+            .onDisconnect()
+            .set(isOfflineForDatabase)
+            .then(() => {
+              userStatusRef.set(isOnlineForDatabase);
+            });
+        });
+      } else {
+        if (userRef) {
+          userRef.off();
         }
+
+        if (userStatusRef) {
+          userStatusRef.off();
+        }
+        database.ref('.info/connected').off()
         setProfile(null);
         setIsLoading(false);
       }
@@ -40,9 +72,14 @@ export const ProfileProvider = ({ children }) => {
     });
     return () => {
       authunSub();
-      if(userRef){
-        userRef.off();
 
+      database.ref('.info/connected').off()
+      
+      if (userRef) {
+        userRef.off();
+      }
+      if (userStatusRef) {
+        userStatusRef.off();
       }
     };
   }, []);
