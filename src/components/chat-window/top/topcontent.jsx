@@ -1,10 +1,10 @@
-
 import { memo } from 'react'; // Make sure to import 'memo' from 'react'
 import { ButtonToolbar, Icon } from 'rsuite';
 import { Link } from 'react-router-dom';
 import { useCurrentRoom } from '../../../context/current-roomcontext';
 import { useMediaQuery } from '../../../misc/custom-hook';
 import RoomInfoBtnModel from './RoomInfoBtnModel';
+import EditRoomDrawer from './EditRoomDrawer';
 
 const Top = () => {
   const roomName = useCurrentRoom(value => value.name);
@@ -17,7 +17,7 @@ const Top = () => {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center">
-        <h4 className='text-disappear d-flex align-items-center'>
+        <h4 className="text-disappear d-flex align-items-center">
           <Icon
             componentClass={Link}
             to="/"
@@ -27,9 +27,11 @@ const Top = () => {
           />
           <span className="text-disappear">{roomName}</span>
         </h4>
-        <ButtonToolbar className='ws-nowrap'>todo</ButtonToolbar>
+        <ButtonToolbar className="ws-nowrap">
+          <EditRoomDrawer />
+        </ButtonToolbar>
       </div>
-      <div className='d-flex justify-content-between align-items-center'>
+      <div className="d-flex justify-content-between align-items-center">
         <span>todo</span>
         <RoomInfoBtnModel />
       </div>
