@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
-import { useContext } from 'react';
-import { createContext, useState } from 'react';
+import { useEffect, createContext, useContext, useState } from 'react';
 import { auth, database } from '../misc/firebase';
 import firebase from 'firebase';
 
@@ -24,14 +22,12 @@ export const ProfileProvider = ({ children }) => {
     let userRef;
     let userStatusRef;
 
-    const authunSub = auth.onAuthStateChanged(authObj => {
+    const authUnsub = auth.onAuthStateChanged(authObj => {
       if (authObj) {
         userStatusRef = database.ref(`/status/${authObj.uid}`);
         userRef = database.ref(`/profiles/${authObj.uid}`);
         userRef.on('value', snap => {
           const { name, createdAt, avatar } = snap.val();
-          // console.log(profileData)
-
           const data = {
             name,
             createdAt,
@@ -44,8 +40,7 @@ export const ProfileProvider = ({ children }) => {
         });
 
         database.ref('.info/connected').on('value', snapshot => {
-          // If we're not currently connected, don't do anything.
-          if (snapshot.val() === false) {
+          if (!!snapshot.val() === false) {
             return;
           }
 
@@ -64,17 +59,17 @@ export const ProfileProvider = ({ children }) => {
         if (userStatusRef) {
           userStatusRef.off();
         }
-        database.ref('.info/connected').off()
+        database.ref('.info/connected').off();
         setProfile(null);
         setIsLoading(false);
       }
-      // console.log('authObj',authObj);
     });
-    return () => {
-      authunSub();
 
-      database.ref('.info/connected').off()
-      
+    return () => {
+      authUnsub();
+
+      database.ref('.info/connected').off();
+
       if (userRef) {
         userRef.off();
       }

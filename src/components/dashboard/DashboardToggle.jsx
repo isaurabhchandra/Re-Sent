@@ -7,32 +7,29 @@ import { isOfflineForDatabase } from '../../context/profile.context';
 
 const DashboardToggle = () => {
   const { isOpen, close, open } = useModelState();
-  const isMobile = useMediaQuery('(max-width:992px)')
+  const isMobile = useMediaQuery('(max-width:992px)');
 
-  const onSignOut = useCallback(()=>{
-
-   database.ref(`/status/${auth.currentUser.uid}`).set(isOfflineForDatabase).then(()=>{
-
-    auth.signOut();
-    Alert.info('Sign Out', 5000)
-    close();
-   }).catch(err =>{
-    Alert.error(err.message, 5000)
-   })
-    
-
-   
-  
-
-  },[close])
+  const onSignOut = useCallback(() => {
+    database
+      .ref(`/status/${auth.currentUser.uid}`)
+      .set(isOfflineForDatabase)
+      .then(() => {
+        auth.signOut();
+        Alert.info('Sign Out', 5000);
+        close();
+      })
+      .catch(err => {
+        Alert.error(err.message, 5000);
+      });
+  }, [close]);
   return (
     <>
       <Button block color="blue" onClick={open}>
         <Icon icon="dashboard" />
         Profile
       </Button>
-      <Drawer full ={isMobile} show={isOpen} onHide={close} placement="left">
-        <Dashboard onSignOut ={onSignOut} />
+      <Drawer full={isMobile} show={isOpen} onHide={close} placement="left">
+        <Dashboard onSignOut={onSignOut} />
       </Drawer>
     </>
   );

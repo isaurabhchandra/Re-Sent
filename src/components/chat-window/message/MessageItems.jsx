@@ -1,6 +1,7 @@
 import ProfileAvatar from '../../dashboard/ProfileAvatar';
 import TimeAgo from 'timeago-react';
 import ProfileInfoBtn from './ProfileInfoBtn';
+import PresenceDot from '../../PresenceDot';
 
 const MessageItems = ({ message }) => {
   const { author, createdAt, text } = message;
@@ -8,6 +9,11 @@ const MessageItems = ({ message }) => {
   return (
     <li className="padded mb-1">
       <div className="d-flex align-items-center font-border mb-1">
+       
+       <PresenceDot uid={author.uid}/>
+       
+       
+       
         <ProfileAvatar
           src={author.avatar}
           name={author.name}
