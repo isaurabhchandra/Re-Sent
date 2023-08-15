@@ -1,8 +1,10 @@
-import {useState,useEffect} from 'react'
+import {useState,useEffect,useCallback} from 'react'
 import { useParams } from 'react-router'
-import { database } from '../../../misc/firebase'
+import { database,auth } from '../../../misc/firebase'
 import { transformToArrWithId } from '../../../misc/helper'
 import MessageItems from './MessageItems'
+import { Alert } from 'rsuite'
+
 
 const Message = () => {
 const {chatId} = useParams()
@@ -24,10 +26,46 @@ return()=>{
   messageRef.off('value')
 }
   },[chatId])
+
+  
+
+const handleLike = useCallback(async(msgId) =>{
+
+  const {uid} = auth.currentUser;
+  
+    const messageRef = database.ref(`/messages/${msgId}`)
+    let alertMsg;
+    await messageRef.transaction(msg =>{
+  if(msg){
+    if(msg.likes && msg.likes[uid]){
+      msg.likeCount -= 1
+      msg.likes[uid] = null;
+      alertMsg = " Like Removed"
+    }else {
+  
+      msg.likeCount +=1;
+  
+      if(!msg.likes){
+        msg.likes = {};
+  
+      }
+  
+      msg.likes[uid] = true;
+      alertMsg ='Like added'
+  
+    }
+  }
+  return msg;
+  
+    })
+  Alert.info(alertMsg,4000)
+  },[])
+  
+
   return (
     <ul className='msg-list custom-scroll'>
       {isChatEmpty && <li>No Message Yet</li>}
-      {canShowMessage && messages.map(msg => <MessageItems key={msg.id} message = {msg}/>)}
+      {canShowMessage && messages.map(msg => <MessageItems key={msg.id} message = {msg} handleLike={handleLike}/>)}
     
     </ul>
   )

@@ -17,6 +17,7 @@ function assembleMessage(profile, chatId) {
     },
 
     createdAt: firebase.database.ServerValue.TIMESTAMP,
+    likeCount :0,
   };
 }
 const Bottom = () => {

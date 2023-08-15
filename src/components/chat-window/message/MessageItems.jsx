@@ -1,21 +1,29 @@
-import  { memo } from 'react';
+import { memo } from 'react';
 import ProfileAvatar from '../../dashboard/ProfileAvatar';
 import TimeAgo from 'timeago-react';
 import ProfileInfoBtn from './ProfileInfoBtn';
 import PresenceDot from './StatusDot';
 import { Divider } from 'rsuite';
-import { useHover } from '../../../misc/custom-hook';
+import { useHover, useMediaQuery } from '../../../misc/custom-hook';
 import IconBtn from './IconBtn';
+import { auth } from '../../../misc/firebase';
 
-const MessageItems = ({ message }) => {
-  const { author, createdAt, text } = message;
+const MessageItems = ({ message, handleLike }) => {
+  const { author, createdAt, text ,likes,likeCount} = message;
 
-  const [selfRef,isHovered]= useHover()
+  const [selfRef, isHovered] = useHover();
+  const isMobile = useMediaQuery(('(max width :992px)'))
+
+const canShowIcon = isMobile || isHovered
+  const isLiked = likes && Object.keys(likes).includes(auth.currentUser.uid)
+
   return (
-    <li className={`padded mt-1 cursor-pointer ${isHovered ? 'bg-black-02' :''}`} ref={selfRef}>
-   <Divider className='mt-1 mb-1' />
+    <li
+      className={`padded mt-1 cursor-pointer ${isHovered ? 'bg-black-02' : ''}`}
+      ref={selfRef}
+    >
+      <Divider className="mt-1 mb-1" />
       <div className="d-flex align-items-center font-border">
-        
         <PresenceDot uid={author.uid} />
 
         <ProfileAvatar
@@ -24,26 +32,25 @@ const MessageItems = ({ message }) => {
           className="ml-1"
           size="xs"
         />
- 
+
         <ProfileInfoBtn
           profile={author}
           appearance="link"
           className="p-0 ml-1 text-black"
-     />
-        
-      
+        />
+
         <TimeAgo
           datetime={createdAt}
           className="font-normal text-black-65 ml-2"
         />
 
         <IconBtn
-        {...(true ? {color: 'red'}:{})}
-       isVisible 
-       iconName ="heart" 
-       tooltip = 'Like this message'
-        onClick={()=>{}}
-        badgeContent ={0}
+          {...(isLiked ? { color: 'red' } : {})}
+          isVisible = {canShowIcon}
+          iconName="heart"
+          tooltip="Like this message"
+          onClick={() => handleLike(message.id)}
+          badgeContent={likeCount}
         />
       </div>
       <div>
