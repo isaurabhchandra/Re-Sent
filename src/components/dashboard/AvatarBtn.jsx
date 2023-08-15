@@ -92,7 +92,7 @@ const AvatarBtn = () => {
       />
       <div>
         <label htmlFor="avatar-upload" className="d-block cursor-pointer padded">
-          Select New Avatar
+          Update Profile
           <input
             id="avatar-upload"
             type="file"
@@ -103,7 +103,7 @@ const AvatarBtn = () => {
         </label>
         <Modal show={isOpen} onHide={close}>
           <Modal.Header>
-            <Modal.Title>Adjust and Upload new Avatar</Modal.Title>
+            <Modal.Title> Upload new Avatar</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="d-flex justify-content-center align-items-center h-100">

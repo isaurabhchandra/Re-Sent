@@ -1,41 +1,46 @@
+import  { memo } from 'react';
 import ProfileAvatar from '../../dashboard/ProfileAvatar';
 import TimeAgo from 'timeago-react';
 import ProfileInfoBtn from './ProfileInfoBtn';
-import PresenceDot from '../../PresenceDot';
+import PresenceDot from './StatusDot';
+import { Divider } from 'rsuite';
+import { useHover } from '../../../misc/custom-hook';
 
 const MessageItems = ({ message }) => {
   const { author, createdAt, text } = message;
 
+  const [selfRef,isHovered]= useHover()
   return (
-    <li className="padded mb-1">
-      <div className="d-flex align-items-center font-border mb-1">
-       
-       <PresenceDot uid={author.uid}/>
-       
-       
-       
+    <li className={`padded mt-1 cursor-pointer ${isHovered ? 'bg-black-02' :''}`} ref={selfRef}>
+   <Divider className='mt-1 mb-1' />
+      <div className="d-flex align-items-center font-border">
+        
+        <PresenceDot uid={author.uid} />
+
         <ProfileAvatar
           src={author.avatar}
           name={author.name}
           className="ml-1"
           size="xs"
         />
-       
+ 
         <ProfileInfoBtn
           profile={author}
           appearance="link"
-          classNamep="p-0 ml-1 text-black"
-        />
+          className="p-0 ml-1 text-black"
+     />
+        
+      
         <TimeAgo
           datetime={createdAt}
           className="font-normal text-black-65 ml-2"
         />
       </div>
       <div>
-        <span className="word-breal-all">{text}</span>
+        <span className=" ml-2  word-break-all">{text}</span>
       </div>
     </li>
   );
 };
 
-export default MessageItems;
+export default memo(MessageItems);

@@ -9,9 +9,9 @@ import {
   Schema,
   Alert,
 } from 'rsuite';
-import { useModelState } from '../misc/custom-hook';
+import { useModelState } from '../../misc/custom-hook';
 import firebase from 'firebase';
-import { auth, database } from '../misc/firebase';
+import { auth, database } from '../../misc/firebase';
 import { useState } from 'react';
 import { useCallback, useRef } from 'react';
 

@@ -1,5 +1,5 @@
 import { Grid, Row, Col } from 'rsuite';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/dashboard/Sidebar';
 import { RoomsProvider } from '../../context/Room.context';
 import { Route, Switch, useRouteMatch } from 'react-router';
 import Chat from './Chat';

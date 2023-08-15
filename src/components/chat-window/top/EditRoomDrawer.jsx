@@ -1,10 +1,14 @@
 import { memo } from 'react';
 import { Alert, Button, Drawer } from 'rsuite';
 import { useMediaQuery, useModelState } from '../../../misc/custom-hook';
-import EditableInput from '../../EditableInput';
+import EditableInput from '../../dashboard/EditableInput';
 import { useCurrentRoom } from '../../../context/current-roomcontext';
 import { database } from '../../../misc/firebase';
 import { useParams } from 'react-router';
+
+import GearIcon from '@rsuite/icons/Gear';
+
+
 
 const EditRoomDrawer = () => {
   const { isOpen, open, close } = useModelState();
@@ -36,14 +40,18 @@ const EditRoomDrawer = () => {
     updateData('description', newDescription);
   };
 
+ 
   return (
     <div>
       <Button
-        className="br-circle"
+      
         size="sm"
         color="red"
         onClick={open}
-      >A</Button>
+      >  <div className="icon-example-list">
+      <GearIcon spin style={{ fontSize: '1em' }} />
+      </div>
+      </Button>
 
 
       <Drawer full={isMobile}  show={isOpen} onHide={close} placement="right">
@@ -62,8 +70,10 @@ const EditRoomDrawer = () => {
             componentClass="textarea"
             rows={5}
             initialValue={description}
+            label={<h6 className="mb-2">Description</h6>}
             onSave={onDescriptionSave}
             emptyMsg="Description cannot be empty"
+            wrapperClassName='mt-3'
           />
         </Drawer.Body>
         <Drawer.Footer>

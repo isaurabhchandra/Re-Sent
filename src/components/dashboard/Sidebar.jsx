@@ -1,8 +1,8 @@
 import { Divider } from "rsuite"
 import {useRef,useState,useEffect} from 'react';
-import CreateRoomBtn from "./CreateRoomBtn"
-import DashboardToggle from "./dashboard/DashboardToggle"
-import ChatRoom from "./Rooms/ChatRoom"
+import CreateRoomBtn from "../Rooms/CreateRoomBtn"
+import DashboardToggle from "./DashboardToggle"
+import ChatRoom from "../Rooms/ChatRoom"
 
 const Sidebar = () => {
 

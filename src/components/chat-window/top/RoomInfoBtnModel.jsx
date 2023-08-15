@@ -10,8 +10,8 @@ const RoomInfoBtnModel = () => {
 
   return (
     <>
-      <Button appearance="link" className="px-0" onClick={open}>
-        Room Information
+      <Button appearance="link" className="px-0  " onClick={open} >
+        About
       </Button>
       <Modal show={isOpen} onHide={close}>
         <Modal.Header>
