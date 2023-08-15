@@ -5,6 +5,7 @@ import ProfileInfoBtn from './ProfileInfoBtn';
 import PresenceDot from './StatusDot';
 import { Divider } from 'rsuite';
 import { useHover } from '../../../misc/custom-hook';
+import IconBtn from './IconBtn';
 
 const MessageItems = ({ message }) => {
   const { author, createdAt, text } = message;
@@ -34,6 +35,15 @@ const MessageItems = ({ message }) => {
         <TimeAgo
           datetime={createdAt}
           className="font-normal text-black-65 ml-2"
+        />
+
+        <IconBtn
+        {...(true ? {color: 'red'}:{})}
+       isVisible 
+       iconName ="heart" 
+       tooltip = 'Like this message'
+        onClick={()=>{}}
+        badgeContent ={0}
         />
       </div>
       <div>
