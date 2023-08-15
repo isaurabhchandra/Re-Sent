@@ -3,7 +3,7 @@ import ProfileAvatar from '../../dashboard/ProfileAvatar';
 import TimeAgo from 'timeago-react';
 import ProfileInfoBtn from './ProfileInfoBtn';
 import PresenceDot from './StatusDot';
-import { Divider } from 'rsuite';
+
 import { useHover, useMediaQuery } from '../../../misc/custom-hook';
 import IconBtn from './IconBtn';
 import { auth } from '../../../misc/firebase';
@@ -43,7 +43,7 @@ const MessageItems = ({ message, handleLike, handleDelete }) => {
       className={`padded mt-1 cursor-pointer ${isHovered ? 'bg-black-02' : ''}`}
       ref={selfRef}
     >
-      <Divider className="mt-1 mb-1" />
+     
       <div className="d-flex align-items-center font-border">
         <PresenceDot uid={author.uid} />
 
@@ -57,7 +57,7 @@ const MessageItems = ({ message, handleLike, handleDelete }) => {
         <ProfileInfoBtn
           profile={author}
           appearance="link"
-          classNamep="p-0 ml-1 text-black"
+          className="p-0 ml-1 text-black"
         />
         {/* {canGrantAdmin && (
             <Button block onClick={() => {}} color="blue">
@@ -91,7 +91,7 @@ const MessageItems = ({ message, handleLike, handleDelete }) => {
         )}
       </div>
       <div>
-        {text && <span className=" ml-2  word-break-all">{text}</span>}
+        {text && <span className=" ml-3  word-break-all">{text}</span>}
         {file && renderFileMessage(file)}
       </div>
     </li>

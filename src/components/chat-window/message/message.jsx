@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { database, auth } from '../../../misc/firebase';
 import { transformToArrWithId } from '../../../misc/helper';
 import MessageItems from './MessageItems';
-import { Alert } from 'rsuite';
-import { useCallback } from 'react';
+import { Alert, Divider } from 'rsuite';
+
 const Message = () => {
   const { chatId } = useParams();
   const [messages, setMessages] = useState(null);
@@ -36,7 +36,7 @@ const Message = () => {
         if (msg.likes && msg.likes[uid]) {
           msg.likeCount -= 1;
           msg.likes[uid] = null;
-          alertMsg = ' Like Removed';
+          alertMsg = 'Like Removed';
         } else {
           msg.likeCount += 1;
 
@@ -53,45 +53,50 @@ const Message = () => {
     Alert.info(alertMsg, 4000);
   }, []);
 
-  const handleDelete = useCallback(async(msgId) => {
+  const handleDelete = useCallback(
+    async msgId => {
+      if (!window.confirm('Delete this message?')) {
+        return;
+      }
 
-if(!window.confirm('Delete this message ?')){
+      const isLast = messages[messages.length - 1].id === msgId;
 
-  return;
-}
+      const updates = {};
+      updates[`/messages/${msgId}`] = null;
 
-const isLast = messages[messages.length-1].id ===msgId
+      if (isLast && messages.length > 1) {
+        updates[`/rooms/${chatId}/lastMessage`] = {
+          ...messages[messages.length - 2],
+          msgId: messages[messages.length - 2].id,
+        };
+      }
+      if (isLast && messages.length === 1) {
+        updates[`/rooms/${chatId}/lastMessage`] = null;
+      }
 
-
-const updates = {}
-updates[`/messages/${msgId}`] = null
-
-if(isLast && messages.length >1){
-
-  updates[`/rooms/${chatId}/lastMessage`] ={
-    ...messages[messages.length-2],
-    msgId:messages[messages.length-2].id
-  }
-}
-if(isLast && messages.length===1){
-  updates[`/rooms/${chatId}/lastMessage`] = null
-}
-
-try {
-  await database.ref().update(updates)
-Alert.info('Message has been deleted')
-} catch (error) {
-  Alert.error(error.message)
-}
-
-  }, [chatId,messages]);
+      try {
+        await database.ref().update(updates);
+        Alert.info('Message has been deleted');
+      } catch (error) {
+        Alert.error(error.message);
+      }
+    },
+    [chatId, messages]
+  );
 
   return (
     <ul className="msg-list custom-scroll">
       {isChatEmpty && <li>No Message Yet</li>}
       {canShowMessage &&
         messages.map(msg => (
-          <MessageItems key={msg.id} message={msg} handleLike={handleLike} handleDelete={handleDelete} />
+          <div key={msg.id}>
+            <MessageItems
+              message={msg}
+              handleLike={handleLike}
+              handleDelete={handleDelete}
+            />
+            <Divider className='mt-2 mb-2' />
+          </div>
         ))}
     </ul>
   );

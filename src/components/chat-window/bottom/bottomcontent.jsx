@@ -6,6 +6,7 @@ import {useProfile} from '../../../context/profile.context'
 import { useParams } from 'react-router';
 import { database } from '../../../misc/firebase';
 import AttachmentBtn from './AttachmentBtn';
+import MicSystem from './MicSystem';
 
 function assembleMessage(profile, chatId) {
   return {
@@ -107,6 +108,8 @@ try {
     <div>
       <InputGroup>
       <AttachmentBtn afterUpload={afterUpload}/>
+<MicSystem afterUpload={afterUpload}/>
+
         <Input
           placeholder=" Write a new message here..."
           value={input}
