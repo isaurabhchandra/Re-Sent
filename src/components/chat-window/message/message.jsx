@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { database, auth, storage } from '../../../misc/firebase';
-import { transformToArrWithId } from '../../../misc/helper';
+import { groupBy, transformToArrWithId } from '../../../misc/helper';
 import MessageItems from './MessageItems';
 import { Alert, Divider } from 'rsuite';
 
@@ -58,12 +58,12 @@ const Message = () => {
       if (!window.confirm('Delete this message?')) {
         return;
       }
-  
+
       const isLast = messages[messages.length - 1].id === msgId;
-  
+
       const updates = {};
       updates[`/messages/${msgId}`] = null;
-  
+
       if (isLast && messages.length > 1) {
         updates[`/rooms/${chatId}/lastMessage`] = {
           ...messages[messages.length - 2],
@@ -73,44 +73,63 @@ const Message = () => {
       if (isLast && messages.length === 1) {
         updates[`/rooms/${chatId}/lastMessage`] = null;
       }
-  
+
       try {
         await database.ref().update(updates);
         Alert.info('Message has been deleted');
       } catch (error) {
         return Alert.error(error.message);
       }
-  
+
       if (file) {
         try {
-        //  console.log('File URL:', file.url); 
+          //  console.log('File URL:', file.url);
           const fileRef = storage.refFromURL(file.url);
           await fileRef.delete();
-         // console.log('File deleted successfully'); // Log successful deletion
+          // console.log('File deleted successfully'); // Log successful deletion
         } catch (error) {
-        //  console.error('Error deleting file:', error); // Log deletion error
+          //  console.error('Error deleting file:', error); // Log deletion error
           Alert.error(error.message);
         }
       }
     },
     [chatId, messages]
   );
-  
+
+  const renderMessage = () => {
+    const groups = groupBy(messages, item =>
+      new Date(item.createdAt).toDateString()
+    );
+
+    const items = []
+
+    Object.keys(groups).forEach((date =>{
+
+items.push(<li key={date}  className='text-center mb-1 padded'>{date}</li>)
+
+
+const msgs = groups[date].map(msg =>   (
+      <div key={msg.id}>
+        <MessageItems
+          message={msg}
+          handleLike={handleLike}
+          handleDelete={handleDelete}
+        />
+        <Divider className="mt-2 mb-2" />
+      </div>
+    ));
+    items.push(...msgs)
+
+
+    }))
+   
+    return items;
+  }
 
   return (
     <ul className="msg-list custom-scroll">
       {isChatEmpty && <li>No Message Yet</li>}
-      {canShowMessage &&
-        messages.map(msg => (
-          <div key={msg.id}>
-            <MessageItems
-              message={msg}
-              handleLike={handleLike}
-              handleDelete={handleDelete}
-            />
-            <Divider className='mt-2 mb-2' />
-          </div>
-        ))}
+      {canShowMessage && renderMessage()}
     </ul>
   );
 };
