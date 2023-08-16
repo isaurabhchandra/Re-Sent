@@ -59,7 +59,7 @@ const MicSystem = ({ afterUpload }) => {
       <Icon icon={isRecording ? 'stop-circle' : ''} />
       <AudioRecorder
         ref={audioRecorderRef}
-        mimeType="audio/webm" // Change the mimeType to match the actual format
+        mimeType="audio/mp3" // Change the mimeType to match the actual format
         onRecordingComplete={onUpload}
         downloadOnSavePress={false}
       />
