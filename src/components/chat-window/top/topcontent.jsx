@@ -1,5 +1,5 @@
 import { memo } from 'react'; // Make sure to import 'memo' from 'react'
-import { ButtonToolbar, Icon } from 'rsuite';
+import { ButtonToolbar, Icon} from 'rsuite';
 import { Link } from 'react-router-dom';
 import { useCurrentRoom } from '../../../context/current-roomcontext';
 import { useMediaQuery } from '../../../misc/custom-hook';
@@ -20,7 +20,8 @@ const isAdmin =useCurrentRoom(v=>v.isAdmin)
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center">
+      <div className=" mt-3 d-flex justify-content-between align-items-center">
+        
         <h4 className="text-disappear d-flex align-items-center">
           <Icon
             componentClass={Link}
@@ -31,15 +32,22 @@ const isAdmin =useCurrentRoom(v=>v.isAdmin)
           />
           <span className="text-disappear">{roomName}</span>
         </h4>
+        
         <ButtonToolbar className="ws-nowrap">
           {isAdmin &&  <EditRoomDrawer />}
          
         </ButtonToolbar>
+        
       </div>
-      <div className="d-flex justify-content-between align-items-center">
+     
+      <div className="d-flex justify-content-between align-items-center" >
+        
         <span>todo</span>
+        
         <RoomInfoBtnModel />
+       
       </div>
+     
     </div>
   );
 };

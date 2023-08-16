@@ -1,31 +1,75 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router';
 import { database, auth, storage } from '../../../misc/firebase';
 import { groupBy, transformToArrWithId } from '../../../misc/helper';
 import MessageItems from './MessageItems';
-import { Alert, Divider } from 'rsuite';
+import { Alert, Button, Divider } from 'rsuite';
+
+const PAGE_SIZE = 15;
+const messageRef = database.ref('/messages');
 
 const Message = () => {
   const { chatId } = useParams();
   const [messages, setMessages] = useState(null);
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  const selfRef = useRef()
 
   const isChatEmpty = messages && messages.length === 0;
   const canShowMessage = messages && messages.length > 0;
 
+  
+  const loadMessage = useCallback(
+    limitToLast => {
+      messageRef.off();
+
+      messageRef
+        .orderByChild('roomId')
+        .equalTo(chatId)
+        .limitToLast(limitToLast || PAGE_SIZE)
+        .on('value', snap => {
+          const data = transformToArrWithId(snap.val());
+          setMessages(data);
+        });
+
+      setLimit(p => p + PAGE_SIZE);
+
+    },
+    [chatId]
+  );
+
+
+  const onLoadMore = useCallback(() => {
+    const node = selfRef.current;
+    const oldScrollHeight = node.scrollHeight;
+
+    loadMessage(limit);
+
+    const handleScroll = () => {
+      const scrollOffset = node.scrollHeight - oldScrollHeight;
+      node.scrollTop = scrollOffset;
+      node.removeEventListener('scroll', handleScroll);
+    };
+
+    node.addEventListener('scroll', handleScroll);
+  }, [loadMessage, limit]);
+
+
   useEffect(() => {
-    const messageRef = database.ref('/messages');
-    messageRef
-      .orderByChild('roomId')
-      .equalTo(chatId)
-      .on('value', snap => {
-        const data = transformToArrWithId(snap.val());
-        setMessages(data);
-      });
+
+    loadMessage();
+
+
     return () => {
       messageRef.off('value');
     };
-  }, [chatId]);
+  }, [loadMessage]);
 
+  useEffect(() => {
+    const node = selfRef.current;
+    node.scrollTop = node.scrollHeight;
+  }, [messages]);
+
+  
   const handleLike = useCallback(async msgId => {
     const { uid } = auth.currentUser;
 
@@ -101,33 +145,38 @@ const Message = () => {
       new Date(item.createdAt).toDateString()
     );
 
-    const items = []
+    const items = [];
 
-    Object.keys(groups).forEach((date =>{
+    Object.keys(groups).forEach(date => {
+      items.push(
+        <li key={date} className="text-center mb-1 padded">
+          <p>{date}</p>
+        </li>
+      );
 
-items.push(<li key={date}  className='text-center mb-1 padded'>{date}</li>)
+      const msgs = groups[date].map(msg => (
+        <div key={msg.id}>
+          <MessageItems
+            message={msg}
+            handleLike={handleLike}
+            handleDelete={handleDelete}
+          />
+          <Divider className="mt-2 mb-2" />
+        </div>
+      ));
+      items.push(...msgs);
+    });
 
-
-const msgs = groups[date].map(msg =>   (
-      <div key={msg.id}>
-        <MessageItems
-          message={msg}
-          handleLike={handleLike}
-          handleDelete={handleDelete}
-        />
-        <Divider className="mt-2 mb-2" />
-      </div>
-    ));
-    items.push(...msgs)
-
-
-    }))
-   
     return items;
-  }
+  };
 
   return (
-    <ul className="msg-list custom-scroll">
+    <ul ref ={selfRef} className="msg-list custom-scroll">
+      {messages && messages.length >=PAGE_SIZE && (
+        <li className='text-center mt-2 mb-2'>
+          <Button onClick={onLoadMore} color='green'>Load more</Button>
+        </li>
+      )}
       {isChatEmpty && <li>No Message Yet</li>}
       {canShowMessage && renderMessage()}
     </ul>
